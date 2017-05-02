@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
-public class Exceptions {
+public class FeignExceptions {
 
-  private static final Logger log = LoggerFactory.getLogger(Exceptions.class);
+  private static final Logger log = LoggerFactory.getLogger(FeignExceptions.class);
 
   private static final String SERVER_ERROR = "SERVER_ERROR";
 

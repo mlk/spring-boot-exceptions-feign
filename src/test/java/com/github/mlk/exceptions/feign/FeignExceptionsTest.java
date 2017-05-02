@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ExceptionsTest {
+public class FeignExceptionsTest {
 
   @Mock
   private Operation operation;
@@ -39,7 +39,7 @@ public class ExceptionsTest {
   public void setUp() throws Exception {
     mockMvc = MockMvcBuilders.standaloneSetup(
         new ExceptionsTestController(operation))
-        .setControllerAdvice(new com.github.mlk.exceptions.feign.Exceptions())
+        .setControllerAdvice(new com.github.mlk.exceptions.feign.FeignExceptions())
         .build();
   }
 
