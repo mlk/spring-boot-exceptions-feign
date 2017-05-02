@@ -1,0 +1,104 @@
+buildscript {
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:1.5.1.RELEASE"
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.11'
+        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.8.0"
+    }
+    repositories {
+        mavenCentral()
+    }
+}
+
+apply plugin: 'java'
+apply plugin: "info.solidsoft.pitest"
+apply plugin: 'maven'
+apply plugin: 'signing'
+apply plugin: 'io.codearte.nexus-staging'
+
+group = 'com.github.mlk'
+version = "1.1.${System.env.CIRCLE_BUILD_NUM}"
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+
+dependencies {
+    compile 'com.github.mlk:spring-boot-exceptions:1.1.48'
+
+    compile 'io.github.openfeign:feign-core:9.4.0'
+
+    testCompile 'org.springframework.boot:spring-boot-starter-test:1.5.1.RELEASE'
+}
+
+uploadArchives {
+    if(project.hasProperty("ossrhUsername")) {
+        repositories {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                pom.project {
+                    name 'Spring Boot Exceptions'
+                    packaging 'jar'
+                    description 'Simple exceptions-to-Spring Boot web Exceptions'
+                    url 'https://www.github.com/mlk/spring-boot-exceptions-fiegn'
+
+                    scm {
+                        connection 'scm:git:https://www.github.com/mlk/spring-boot-exceptions-fiegn/'
+                        url 'https://www.github.com/mlk/spring-boot-exceptions-fiegn/'
+                    }
+
+                    licenses {
+                        license {
+                            name 'MIT License'
+                            url 'https://www.github.com/mlk/spring-boot-exceptions-fiegn/LICENSE'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id 'mlk'
+                            name 'Michael Lee'
+                            email 'pom@michael-lloyd-lee.me.uk'
+                        }
+                        developer {
+                            id 'fergusstrange'
+                            name 'Fergus Strange'
+                        }
+                        developer {
+                            id 'steinfletcher'
+                            name 'Stein Fletcher'
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
